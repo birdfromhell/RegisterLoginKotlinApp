@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Register Login App</string>
+    <string name="you_have_an_account_sign_here">You Have An Account? Sign Here</string>
 </resources>
