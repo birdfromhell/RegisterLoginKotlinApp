@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import retrofit2.Call
@@ -42,44 +43,25 @@ class MainActivity : AppCompatActivity() {
         btnRegister.setOnClickListener {
             registerUser()
         }
-//
-//        val btnLogin: Button = findViewById(R.id.btn_login)
-//        btnLogin.setOnClickListener {
-//            loginUser()
-//        }
     }
 
     private fun registerUser() {
-        // get text from input fields
-        val name = etName.text.toString()
+        val fullName = etName.text.toString()
         val email = etEmail.text.toString()
         val password = etPassword.text.toString()
 
-        val call = apiInterface.registerUser(User(0, name, email, password))
+        val call = apiInterface.registerUser(User(0, fullName, email, password))
         call.enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
-                // Handle successful registration
+                if (response.isSuccessful) {
+                    Toast.makeText(this@MainActivity, "Register success!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@MainActivity, "Register failed!", Toast.LENGTH_SHORT).show()
+                }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
-                // Handle error
-            }
-        })
-    }
-
-    private fun loginUser() {
-        // get text from input fields
-        val email = etEmail.text.toString()
-        val password = etPassword.text.toString()
-
-        val call = apiInterface.loginUser(User(0, "", email, password))
-        call.enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                // Handle successful login
-            }
-
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                // Handle error
+                Toast.makeText(this@MainActivity, "Network error!", Toast.LENGTH_SHORT).show()
             }
         })
     }
