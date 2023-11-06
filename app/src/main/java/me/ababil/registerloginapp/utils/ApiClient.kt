@@ -1,4 +1,4 @@
-package me.ababil.registerloginapp
+package me.ababil.registerloginapp.utils
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

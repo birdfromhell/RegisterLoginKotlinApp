@@ -8,6 +8,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import me.ababil.registerloginapp.activity.LoginActivity
+import me.ababil.registerloginapp.data.User
+import me.ababil.registerloginapp.data.UserRegister
+import me.ababil.registerloginapp.utils.ApiClient
+import me.ababil.registerloginapp.utils.ApiInterface
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,11 +53,11 @@ class MainActivity : AppCompatActivity() {
             registerUser()
         }
     }
-    fun isEmailValid(email: String): Boolean {
+    private fun isEmailValid(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    fun isPasswordValid(password: String): Boolean {
+    private fun isPasswordValid(password: String): Boolean {
         val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$"
         val passwordMatcher = Regex(passwordPattern)
         return passwordMatcher.matches(password)
@@ -62,24 +67,8 @@ class MainActivity : AppCompatActivity() {
         val username = etUsername.text.toString()
         val email = etEmail.text.toString()
         val password = etPassword.text.toString()
-        val confirmPassword = etConfirmPassword.text.toString()
 
-        if (!isEmailValid(email)) {
-            Toast.makeText(this@MainActivity, "Email not valid", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (!isPasswordValid(password)) {
-            Toast.makeText(this@MainActivity, "Password not valid. It must contain at least 8 characters, including 1 number, 1 lower case letter and 1 upper case letter", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (password != confirmPassword) {
-            Toast.makeText(this@MainActivity, "Password and Confirm Password do not match", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val call = apiInterface.registerUser(UserRegister(0,username, fullName, email, password))
+        val call = apiInterface.registerUser(UserRegister(0, username, fullName, email, password))
         call.enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
@@ -88,7 +77,16 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this@MainActivity, LoginActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this@MainActivity, "Register failed!", Toast.LENGTH_SHORT).show()
+                    if (response.errorBody() != null) {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+                            if (errorBody.contains("Username already registered")) {
+                                Toast.makeText(this@MainActivity, "Username already registered!", Toast.LENGTH_SHORT).show()
+                            } else if (errorBody.contains("Email already registered")) {
+                                Toast.makeText(this@MainActivity, "Email already registered!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 }
             }
 
@@ -97,4 +95,5 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
 }

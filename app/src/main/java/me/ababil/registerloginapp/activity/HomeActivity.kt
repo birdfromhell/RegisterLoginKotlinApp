@@ -1,8 +1,9 @@
-package me.ababil.registerloginapp
+package me.ababil.registerloginapp.activity
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import me.ababil.registerloginapp.R
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var tvWelcome: TextView
